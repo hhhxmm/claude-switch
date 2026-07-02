@@ -92,7 +92,7 @@ claude-switch list --no-balance   # 快速模式，跳过余额查询
 ## Files in this package / 包内文件
 
 ```
-claude-switch-package/
+claude-switch/
   --- Auto-select wrappers (Node.js first → Python fallback) / 自动选择 ---
   claude-switch.js      # Node.js core / 核心（需 Node.js 8+）
   claude-switch.py      # Python core  / 核心（需 Python 3.6+）
