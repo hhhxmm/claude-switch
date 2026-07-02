@@ -1,4 +1,5 @@
 @echo off
+chcp 65001 >nul 2>&1
 REM ============================================================
 REM install.bat — claude-switch installer (Windows) / 安装脚本
 REM Copies files to %USERPROFILE%\bin\ and %USERPROFILE%\.claude\commands\
@@ -30,8 +31,13 @@ if %errorlevel% equ 0 (
 where python >nul 2>&1
 if %errorlevel% equ 0 (
     for /f "tokens=*" %%i in ('python --version 2^>^&1') do set PYTHON_VER=%%i
-    echo   √ Python:  !PYTHON_VER!
-    set HAS_PYTHON=1
+    echo !PYTHON_VER! | findstr /R "Python [0-9]" >nul 2>&1
+    if !errorlevel! equ 0 (
+        echo   √ Python:  !PYTHON_VER!
+        set HAS_PYTHON=1
+    ) else (
+        echo   × Python:  stub detected, not installed / 检测到存根，未实际安装
+    )
 ) else (
     echo   × Python:  未安装 / not found
 )
@@ -61,10 +67,16 @@ REM 2. Copy executables to ~/bin / 拷贝可执行文件
 echo Installing to / 正在安装到 %BIN_DIR% ...
 copy /Y "%SCRIPT_DIR%claude-switch.js"     "%BIN_DIR%\" >nul
 copy /Y "%SCRIPT_DIR%claude-switch.py"     "%BIN_DIR%\" >nul
-copy /Y "%SCRIPT_DIR%claude-switch.bat"    "%BIN_DIR%\" >nul
-copy /Y "%SCRIPT_DIR%claude-switch-py.bat" "%BIN_DIR%\" >nul
-copy /Y "%SCRIPT_DIR%cs.bat"               "%BIN_DIR%\" >nul
-copy /Y "%SCRIPT_DIR%cs-py.bat"            "%BIN_DIR%\" >nul
+
+REM Detect runtime for platform-specific wrappers / 检测运行时以选择平台对应的封装脚本
+if !HAS_NODE! equ 1 (
+    copy /Y "%SCRIPT_DIR%claude-switch.bat" "%BIN_DIR%\" >nul
+    copy /Y "%SCRIPT_DIR%cs.bat"            "%BIN_DIR%\" >nul
+)
+if !HAS_PYTHON! equ 1 (
+    copy /Y "%SCRIPT_DIR%claude-switch-py.bat" "%BIN_DIR%\" >nul
+    copy /Y "%SCRIPT_DIR%cs-py.bat"            "%BIN_DIR%\" >nul
+)
 
 REM 3. Copy slash-command definitions / 拷贝斜杠命令
 echo Installing to / 正在安装到 %CMD_DIR% ...
@@ -73,17 +85,22 @@ copy /Y "%SCRIPT_DIR%cs.md"            "%CMD_DIR%\" >nul
 
 echo.
 echo Done / 安装完成！Installed files / 已安装以下文件：
-echo   --- Node.js version (requires Node.js 8+) / Node.js 版 ---
-echo   %BIN_DIR%\claude-switch.js     (core script / 核心脚本)
-echo   %BIN_DIR%\claude-switch.bat    (wrapper / 封装)
-echo   %BIN_DIR%\cs.bat               (shorthand / 简写)
-echo   --- Python version (requires Python 3.6+) / Python 版 ---
-echo   %BIN_DIR%\claude-switch.py     (core script / 核心脚本)
-echo   %BIN_DIR%\claude-switch-py.bat (wrapper / 封装)
-echo   %BIN_DIR%\cs-py.bat            (shorthand / 简写)
+echo   --- Core scripts / 核心脚本 ---
+echo   %BIN_DIR%\claude-switch.js     [Node.js core / Node.js 核心脚本]
+echo   %BIN_DIR%\claude-switch.py     [Python core / Python 核心脚本]
+if !HAS_NODE! equ 1 (
+echo   --- Node.js wrappers / Node.js 封装 ---
+echo   %BIN_DIR%\claude-switch.bat    [wrapper / 封装]
+echo   %BIN_DIR%\cs.bat               [shorthand / 简写]
+)
+if !HAS_PYTHON! equ 1 (
+echo   --- Python wrappers / Python 封装 ---
+echo   %BIN_DIR%\claude-switch-py.bat [wrapper / 封装]
+echo   %BIN_DIR%\cs-py.bat            [shorthand / 简写]
+)
 echo   --- Claude Code commands / 斜杠命令 ---
-echo   %CMD_DIR%\claude-switch.md     (slash command)
-echo   %CMD_DIR%\cs.md                (slash command)
+echo   %CMD_DIR%\claude-switch.md     [slash command]
+echo   %CMD_DIR%\cs.md                [slash command]
 
 REM 4. Check PATH / 检查 ~/bin 是否在 PATH 中
 echo %PATH% | findstr /C:"%BIN_DIR%" >nul 2>&1

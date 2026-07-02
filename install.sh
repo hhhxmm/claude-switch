@@ -65,20 +65,37 @@ mkdir -p "$CMD_DIR"
 echo "Installing to / 正在安装到 $BIN_DIR ..."
 cp "$SCRIPT_DIR/claude-switch.js"    "$BIN_DIR/"
 cp "$SCRIPT_DIR/claude-switch.py"    "$BIN_DIR/"
-cp "$SCRIPT_DIR/claude-switch"       "$BIN_DIR/"
-cp "$SCRIPT_DIR/claude-switch.bat"   "$BIN_DIR/"
-cp "$SCRIPT_DIR/claude-switch-py"    "$BIN_DIR/"
-cp "$SCRIPT_DIR/claude-switch-py.bat" "$BIN_DIR/"
-cp "$SCRIPT_DIR/cs"                  "$BIN_DIR/"
-cp "$SCRIPT_DIR/cs.bat"              "$BIN_DIR/"
-cp "$SCRIPT_DIR/cs-py"               "$BIN_DIR/"
-cp "$SCRIPT_DIR/cs-py.bat"           "$BIN_DIR/"
 
-# Make shell wrappers executable / 赋予执行权限
-chmod +x "$BIN_DIR/claude-switch"
-chmod +x "$BIN_DIR/claude-switch-py"
-chmod +x "$BIN_DIR/cs"
-chmod +x "$BIN_DIR/cs-py"
+# Detect OS and install platform-specific wrappers / 检测操作系统，安装对应平台的封装脚本
+case "$(uname -s)" in
+    MINGW*|MSYS*|CYGWIN*)
+        # Windows (Git Bash / MSYS2) — use .bat wrappers
+        if [ $HAS_NODE -eq 1 ]; then
+            cp "$SCRIPT_DIR/claude-switch.bat" "$BIN_DIR/"
+            cp "$SCRIPT_DIR/cs.bat"            "$BIN_DIR/"
+        fi
+        if [ $HAS_PYTHON -eq 1 ]; then
+            cp "$SCRIPT_DIR/claude-switch-py.bat" "$BIN_DIR/"
+            cp "$SCRIPT_DIR/cs-py.bat"            "$BIN_DIR/"
+        fi
+        ;;
+    *)
+        # Linux / macOS — use shell wrappers
+        if [ $HAS_NODE -eq 1 ]; then
+            cp "$SCRIPT_DIR/claude-switch" "$BIN_DIR/"
+            cp "$SCRIPT_DIR/cs"            "$BIN_DIR/"
+        fi
+        if [ $HAS_PYTHON -eq 1 ]; then
+            cp "$SCRIPT_DIR/claude-switch-py" "$BIN_DIR/"
+            cp "$SCRIPT_DIR/cs-py"            "$BIN_DIR/"
+        fi
+        # Make shell wrappers executable / 赋予执行权限
+        chmod +x "$BIN_DIR/claude-switch" 2>/dev/null || true
+        chmod +x "$BIN_DIR/cs"            2>/dev/null || true
+        chmod +x "$BIN_DIR/claude-switch-py" 2>/dev/null || true
+        chmod +x "$BIN_DIR/cs-py"            2>/dev/null || true
+        ;;
+esac
 
 # 3. Copy slash-command definitions to ~/.claude/commands / 拷贝斜杠命令
 echo "Installing to / 正在安装到 $CMD_DIR ..."
@@ -87,18 +104,23 @@ cp "$SCRIPT_DIR/cs.md"            "$CMD_DIR/"
 
 echo ""
 echo "Done / 安装完成！Installed files / 已安装以下文件："
-echo "  --- Node.js version (requires Node.js 8+) / Node.js 版 ---"
-echo "  $BIN_DIR/claude-switch.js    (core script / 核心脚本)"
-echo "  $BIN_DIR/claude-switch       (shell wrapper / shell 封装)"
-echo "  $BIN_DIR/claude-switch.bat   (Windows wrapper)"
-echo "  $BIN_DIR/cs                   (shorthand / 简写)"
-echo "  $BIN_DIR/cs.bat               (shorthand / 简写)"
-echo "  --- Python version (requires Python 3.6+) / Python 版 ---"
-echo "  $BIN_DIR/claude-switch.py    (core script / 核心脚本)"
-echo "  $BIN_DIR/claude-switch-py    (shell wrapper / shell 封装)"
-echo "  $BIN_DIR/claude-switch-py.bat (Windows wrapper)"
-echo "  $BIN_DIR/cs-py                (shorthand / 简写)"
-echo "  $BIN_DIR/cs-py.bat            (shorthand / 简写)"
+echo "  --- Core scripts / 核心脚本 ---"
+echo "  $BIN_DIR/claude-switch.js    (Node.js core / Node.js 核心脚本)"
+echo "  $BIN_DIR/claude-switch.py    (Python core / Python 核心脚本)"
+if [ $HAS_NODE -eq 1 ]; then
+    echo "  --- Node.js wrappers / Node.js 封装 ---"
+    case "$(uname -s)" in
+        MINGW*|MSYS*|CYGWIN*) echo "  $BIN_DIR/claude-switch.bat    (wrapper / 封装)"; echo "  $BIN_DIR/cs.bat               (shorthand / 简写)" ;;
+        *) echo "  $BIN_DIR/claude-switch       (shell wrapper / shell 封装)"; echo "  $BIN_DIR/cs                   (shorthand / 简写)" ;;
+    esac
+fi
+if [ $HAS_PYTHON -eq 1 ]; then
+    echo "  --- Python wrappers / Python 封装 ---"
+    case "$(uname -s)" in
+        MINGW*|MSYS*|CYGWIN*) echo "  $BIN_DIR/claude-switch-py.bat (wrapper / 封装)"; echo "  $BIN_DIR/cs-py.bat            (shorthand / 简写)" ;;
+        *) echo "  $BIN_DIR/claude-switch-py    (shell wrapper / shell 封装)"; echo "  $BIN_DIR/cs-py                (shorthand / 简写)" ;;
+    esac
+fi
 echo "  --- Claude Code commands / 斜杠命令 ---"
 echo "  $CMD_DIR/claude-switch.md    (slash command)"
 echo "  $CMD_DIR/cs.md               (slash command)"
