@@ -16,3 +16,30 @@ desktop.ini
 *.swp
 *.swo
 *~
+
+# Environment files / 环境变量文件（可能含密钥）
+.env
+.env.*
+*.env
+!.env.example
+
+# Logs & temp files / 日志与临时文件
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.tmp
+*.bak
+
+# Dependencies / 依赖目录
+node_modules/
+
+# Python build artifacts / Python 编译产物
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+
+# Other editor configs / 其他编辑器配置
+.vscode/

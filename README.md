@@ -1,5 +1,7 @@
 # claude-switch — Claude Code Profile Switcher / 配置文件切换器
 
+> 纯AI(GLM-5.2、GLM-4.7-Flash、deepseek-v4-pro、deepseek-v4-flash、mimo-v2.5-pro、mimo-v2.5、mimo-v2-flash、qwen3.7-max、qwen3.7-plus),0人工
+
 Switch between API providers (DeepSeek, Mimo, Anthropic, etc.) from the terminal or inside Claude Code with `/cs`.
 在不同的 API 提供商之间快速切换，支持终端命令行和 Claude Code 内部 `/cs` 斜杠命令。
 
