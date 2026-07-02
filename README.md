@@ -105,9 +105,13 @@ claude-switch-package/
   --- Commands / 斜杠命令 ---
   claude-switch.md      # /claude-switch slash command
   cs.md                 # /cs slash command
-  --- Installers / 安装脚本 ---
+  --- Installers / 安装与卸载 ---
   install.sh            # Unix installer
   install.bat           # Windows installer
+  uninstall.sh          # Unix uninstaller
+  uninstall.bat         # Windows uninstaller
+  --- Session transcripts / 会话记录 ---
+  sessions/             # Claude Code session logs (gitignored)
   README.md             # This file / 本说明文件
 ```
 

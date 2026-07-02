@@ -5,7 +5,7 @@
 .claude/
 
 # Session transcripts / 会话记录
-*claude-switchlist*.txt
+sessions/
 
 # OS files / 系统文件
 .DS_Store
